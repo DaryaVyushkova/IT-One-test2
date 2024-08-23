@@ -1,0 +1,17 @@
+.projectListContainer {
+  padding: 20px;
+  scroll-margin-top: 100px;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}
