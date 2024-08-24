@@ -1,54 +1,59 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Layout, Spin } from "antd";
-const { Header, Content } = Layout;
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { Layout } from 'antd'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { useDebounce } from "use-debounce";
+const { Header, Content } = Layout
 
-import { ProjectsProvider, useProjects } from "context/ProjectsContext";
-import FilterInput from "components/FilterInput";
+import { useDebounce } from 'use-debounce'
 
-import ProjectList from "./components/ProjectList";
+import FilterInput from 'components/FilterInput'
 
-import "./styles.css";
+import ProjectList from './components/ProjectList'
+
+import './styles.css'
+import { AppDispatch, RootState } from 'app/store'
+import { loadProjects, setCurrentPage } from 'features/projects/projectsSlice'
 
 const ProjectsPageContent: React.FC = () => {
-  const { projects, loading, error, currentPage, totalPages, loadProjects } =
-    useProjects();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 500);
-  const prevSearchRef = useRef("");
-  const isInitialMount = useRef(true);
-  const listRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch<AppDispatch>()
+
+  const { projects, loading, error, currentPage, totalPages } = useSelector(
+    (state: RootState) => state.projects
+  )
+
+  const [search, setSearch] = useState('')
+  const [debouncedSearch] = useDebounce(search, 500)
+  const prevSearchRef = useRef('')
+  const isInitialMount = useRef(true)
+  const listRef = useRef<HTMLDivElement>(null)
 
   const handleSearch = useCallback((value: string) => {
-    setSearch(value);
-  }, []);
+    setSearch(value)
+  }, [])
 
   const handlePageChange = useCallback(
     (page: number) => {
-      loadProjects(page, debouncedSearch);
+      dispatch(loadProjects({ page, searchTerm: debouncedSearch }))
+      dispatch(setCurrentPage(page))
+      if (listRef.current) {
+        listRef.current.scrollIntoView({ behavior: 'smooth' })
+      }
     },
-    [loadProjects, debouncedSearch]
-  );
-
-  useEffect(() => {
-    if (listRef.current && !isInitialMount.current) {
-      listRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [projects]);
+    [dispatch, debouncedSearch]
+  )
 
   useEffect(() => {
     if (isInitialMount.current) {
-      loadProjects(1);
-      isInitialMount.current = false;
+      dispatch(loadProjects({ page: 1 }))
+      isInitialMount.current = false
     } else if (debouncedSearch !== prevSearchRef.current) {
-      loadProjects(1, debouncedSearch);
-      prevSearchRef.current = debouncedSearch;
+      dispatch(loadProjects({ page: 1, searchTerm: debouncedSearch }))
+      prevSearchRef.current = debouncedSearch
     }
-  }, [debouncedSearch, loadProjects]);
+  }, [debouncedSearch, loadProjects])
 
   if (error) {
-    return <div className="error">Error: {error}</div>;
+    return <div className="error">Error: {error}</div>
   }
 
   return (
@@ -56,30 +61,25 @@ const ProjectsPageContent: React.FC = () => {
       <Header className="header">
         <h1 className="headerTitle">Popular TypeScript Projects on GitHub</h1>
       </Header>
-      <Content className={"projectListContainer"} ref={listRef}>
+      <Content className={'projectListContainer'} ref={listRef}>
         <FilterInput
-          className={"filterInput"}
+          className={'filterInput'}
           value={search}
           onChange={handleSearch}
           placeholder="Search projects by name"
         />
-        <Spin spinning={loading} tip="Loading projects...">
-          <ProjectList
-            projects={projects}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </Spin>
+        <ProjectList
+          loading={loading}
+          projects={projects}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </Content>
     </Layout>
-  );
-};
+  )
+}
 
-const ProjectsPage: React.FC = () => (
-  <ProjectsProvider>
-    <ProjectsPageContent />
-  </ProjectsProvider>
-);
+const ProjectsPage: React.FC = () => <ProjectsPageContent />
 
-export default ProjectsPage;
+export default ProjectsPage

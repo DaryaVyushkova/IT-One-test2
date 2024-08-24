@@ -1,12 +1,12 @@
-import React from "react";
-import { Pagination } from "antd";
-import "antd/dist/reset.css";
+import React from 'react'
+import { Pagination } from 'antd'
+import 'antd/dist/reset.css'
 
 interface PageNavigatorProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  className: string;
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  className: string
 }
 
 const PageNavigator: React.FC<PageNavigatorProps> = ({
@@ -26,6 +26,6 @@ const PageNavigator: React.FC<PageNavigatorProps> = ({
       showQuickJumper
     />
   </div>
-);
+)
 
-export default PageNavigator;
+export default PageNavigator

@@ -1,14 +1,14 @@
-import React from "react";
-import { List, Card, Typography } from "antd";
-import { GithubOutlined, StarOutlined } from "@ant-design/icons";
+import React from 'react'
+import { List, Card, Typography } from 'antd'
+import { GithubOutlined, StarOutlined } from '@ant-design/icons'
 
-import "./styles.css";
-import { Project } from "types/Project";
+import './styles.css'
+import { Project } from 'types/Project'
 
-const { Paragraph } = Typography;
+const { Paragraph } = Typography
 
 interface ProjectItemProps {
-  project: Project;
+  project: Project
 }
 
 const ProjectItem: React.FC<ProjectItemProps> = ({ project }) => (
@@ -45,6 +45,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({ project }) => (
       </Paragraph>
     </Card>
   </List.Item>
-);
+)
 
-export default ProjectItem;
+export default ProjectItem
